@@ -1,0 +1,10 @@
+connections:
+  example_1:
+    user: user
+    host: 192.168.2.80
+    password: qwerty
+
+  example_2:
+    user: user
+    host: 192.168.2.80
+    password: qwerty
