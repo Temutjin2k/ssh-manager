@@ -76,13 +76,22 @@ func load(path string) ([]conn, error) {
 	return conns, nil
 }
 
+var palette = []int{203, 215, 227, 114, 80, 75, 141, 213}
+
+func color(i int) string {
+	return fmt.Sprintf("\033[38;5;%dm", palette[i%len(palette)])
+}
+
 func choose(conns []conn) (conn, bool) {
 	fd := int(os.Stdin.Fd())
 	old, err := term.MakeRaw(fd)
 	if err != nil {
 		fatal(err)
 	}
-	restore := func() { term.Restore(fd, old) }
+	defer func() {
+		fmt.Print("\033[?25h")
+		term.Restore(fd, old)
+	}()
 
 	sel := 0
 	draw := func(first bool) {
@@ -92,22 +101,22 @@ func choose(conns []conn) (conn, bool) {
 		for i, c := range conns {
 			line := fmt.Sprintf("%s  (%s@%s)", c.Name, c.User, c.Host)
 			if i == sel {
-				fmt.Printf("\r\033[K\033[7m> %s\033[0m\r\n", line)
+				fmt.Printf("\r\033[K%s\033[1m▶ %s\033[0m\r\n", color(i), line)
 			} else {
-				fmt.Printf("\r\033[K  %s\r\n", line)
+				fmt.Printf("\r\033[K%s  %s\033[0m\r\n", color(i), line)
 			}
 		}
 	}
 
+	fmt.Print("\033[1mSelect connection\033[0m  \033[2m↑/↓ move · Enter connect · q quit\033[0m\r\n")
 	fmt.Print("\033[?25l")
-	fmt.Print("Select connection (↑/↓, Enter, q to quit)\r\n")
 	draw(true)
 
 	buf := make([]byte, 3)
 	for {
 		n, err := os.Stdin.Read(buf)
 		if err != nil {
-			break
+			return conn{}, false
 		}
 		switch {
 		case n == 3 && buf[0] == 27 && buf[1] == '[' && buf[2] == 'A', n == 1 && buf[0] == 'k':
@@ -115,19 +124,12 @@ func choose(conns []conn) (conn, bool) {
 		case n == 3 && buf[0] == 27 && buf[1] == '[' && buf[2] == 'B', n == 1 && buf[0] == 'j':
 			sel = (sel + 1) % len(conns)
 		case n == 1 && (buf[0] == '\r' || buf[0] == '\n'):
-			fmt.Print("\033[?25h")
-			restore()
 			return conns[sel], true
 		case n == 1 && (buf[0] == 'q' || buf[0] == 3):
-			fmt.Print("\033[?25h")
-			restore()
 			return conn{}, false
 		}
 		draw(false)
 	}
-	fmt.Print("\033[?25h")
-	restore()
-	return conn{}, false
 }
 
 func connect(c conn) {
