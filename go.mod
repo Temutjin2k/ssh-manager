@@ -1,4 +1,4 @@
-module ssh-manager
+module github.com/Temutjin2k/ssh-manager
 
 go 1.26.1
 

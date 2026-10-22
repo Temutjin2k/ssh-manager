@@ -21,7 +21,7 @@ type conn struct {
 }
 
 func main() {
-	path := flag.String("c", "", "path to config (default: ./conf.yaml, then ~/.config/ssh-manager/conf.yaml)")
+	path := flag.String("c", "", "path to config (default: ~/.config/ssh-manager/conf.yaml, then ./conf.yaml)")
 	flag.Parse()
 
 	conns, err := load(configPath(*path))
@@ -43,11 +43,12 @@ func configPath(flagPath string) string {
 	if flagPath != "" {
 		return flagPath
 	}
-	if _, err := os.Stat("conf.yaml"); err == nil {
-		return "conf.yaml"
-	}
 	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".config", "ssh-manager", "conf.yaml")
+	global := filepath.Join(home, ".config", "ssh-manager", "conf.yaml")
+	if _, err := os.Stat(global); err == nil {
+		return global
+	}
+	return "conf.yaml"
 }
 
 func load(path string) ([]conn, error) {
