@@ -32,7 +32,7 @@ ssh-manager
 
 The first entry, `+ add new connection?`, asks for name, user, host, port, password and whether to run sudo, then appends the connection to the config file. If no config exists yet, `~/.config/ssh-manager/conf.yaml` is created.
 
-On the selected connection, `[edit]` (yellow) and `[delete]` (red) appear to the right. Press → / ← to focus them and Enter to run. Editing pre-fills the current values (an empty password keeps the current one); deleting asks for confirmation.
+On the selected connection, `[edit]` (yellow) and `[delete]` (red) appear to the right. Press → / ← to focus them and Enter to run. `[edit]` opens a screen with all fields (name, user, host, port, password, sudo): pick one with ↑/↓ and Enter to change it, then choose `Save` (or press `s`). `Esc`/`q`/`Back` returns without saving. In the password field an empty value keeps the current password and `-` clears it. `[delete]` asks for confirmation.
 
 ## Sudo
 
