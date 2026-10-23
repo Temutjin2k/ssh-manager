@@ -30,6 +30,10 @@ ssh-manager
 
 ↑/↓ (or j/k) to move, Enter to connect, q to quit.
 
+The first entry, `+ add new connection?`, asks for name, user, host, port, password and whether to run sudo, then appends the connection to the config file. If no config exists yet, `~/.config/ssh-manager/conf.yaml` is created.
+
+On the selected connection, `[edit]` (yellow) and `[delete]` (red) appear to the right. Press → / ← to focus them and Enter to run. Editing pre-fills the current values (an empty password keeps the current one); deleting asks for confirmation.
+
 ## Sudo
 
 For connections with a `password`, right after login the tool runs `sudo -S -v` with that password, then drops you into a normal shell. Sudo's credentials are cached for the session, so later `sudo` commands don't ask for the password again (until the server's sudo timeout expires).
