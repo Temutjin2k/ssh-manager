@@ -20,7 +20,7 @@ curl -o ~/.config/ssh-manager/conf.yaml https://raw.githubusercontent.com/Temutj
 chmod 600 ~/.config/ssh-manager/conf.yaml
 ```
 
-Edit the file and list your connections (`port` is optional). Use `-c path` for another config file.
+Edit the file and list your connections (`port` and `sudo` are optional). Use `-c path` for another config file.
 
 ## Usage
 
@@ -29,3 +29,24 @@ ssh-manager
 ```
 
 ↑/↓ (or j/k) to move, Enter to connect, q to quit.
+
+## Sudo
+
+For connections with a `password`, right after login the tool runs `sudo -S -v` with that password, then drops you into a normal shell. Sudo's credentials are cached for the session, so later `sudo` commands don't ask for the password again (until the server's sudo timeout expires).
+
+This assumes the sudo password is the same as the SSH password. To turn it off for a connection, set `sudo: false`:
+
+```yaml
+connections:
+  my_server:
+    user: user
+    host: 192.168.2.80
+    password: qwerty
+    sudo: false
+```
+
+## Disclaimer
+
+This project was fully generated with AI.
+
+Passwords in the config are stored in plain text — keep the file private (`chmod 600`) and prefer SSH keys where possible.

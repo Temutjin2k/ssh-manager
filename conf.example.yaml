@@ -1,10 +1,26 @@
 connections:
-  example_1:
+  # password login on the default port 22; sudo is primed after login
+  example_basic:
     user: user
     host: 192.168.2.80
     password: qwerty
 
-  example_2:
+  # non-standard SSH port
+  example_custom_port:
     user: user
-    host: 192.168.2.80
+    host: 192.168.2.81
+    port: 2222
     password: qwerty
+
+  # password login, but do not run sudo automatically
+  example_no_sudo:
+    user: user
+    host: 192.168.2.82
+    password: qwerty
+    sudo: false
+
+  # no password: ssh asks for it itself or uses your SSH key
+  example_key_auth:
+    user: user
+    host: 192.168.2.83
+    port: 22

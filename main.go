@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	"golang.org/x/term"
@@ -18,6 +19,7 @@ type conn struct {
 	Host     string `yaml:"host"`
 	Port     int    `yaml:"port"`
 	Password string `yaml:"password"`
+	Sudo     *bool  `yaml:"sudo"`
 }
 
 func main() {
@@ -142,7 +144,14 @@ func connect(c conn) {
 	if c.Port != 0 {
 		args = append(args, "-p", fmt.Sprint(c.Port))
 	}
-	args = append(args, target)
+	if c.Password != "" && (c.Sudo == nil || *c.Sudo) {
+		// Prime sudo's timestamp in the same tty so later sudo calls in this session skip the prompt.
+		quoted := "'" + strings.ReplaceAll(c.Password, "'", `'\''`) + "'"
+		args = append(args, "-t", target,
+			fmt.Sprintf(`printf '%%s\n' %s | sudo -S -v -p ''; exec "${SHELL:-sh}" -l`, quoted))
+	} else {
+		args = append(args, target)
+	}
 
 	if c.Password != "" {
 		if _, err := exec.LookPath("sshpass"); err != nil {
